@@ -1,0 +1,13 @@
+### Add a New Product to NexaMart
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+    "name": "Gaming Mouse",
+    "price": 4500,
+    "category": "Electronics",
+    "description": "High-precision RGB gaming mouse"
+}
+
+### Get All Products
+GET http://localhost:5000/api/products
