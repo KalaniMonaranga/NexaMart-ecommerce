@@ -12,6 +12,19 @@ const userSchema = new mongoose.Schema({
     unique: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email']
   },
+
+phone: {
+  type: String,
+  unique: true,
+  sparse: true // Allows users to have either email OR phone
+},
+
+phone: {
+    type: String,
+    unique: true,
+    sparse: true // This is IMPORTANT: it allows some users to NOT have a phone while others do
+  },
+
   password: { 
     type: String, 
     required: [true, 'Please add a password'],
@@ -33,5 +46,6 @@ userSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
 
 module.exports = mongoose.model('User', userSchema);
