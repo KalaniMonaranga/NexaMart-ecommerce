@@ -1,53 +1,133 @@
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedinIn,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#1E3A8A] text-white px-6 py-10 mt-10">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div>
-          <Link to="/" className="text-2xl font-extrabold text-[#60A5FA]">
-            NexaMart
-          </Link>
-          <p className="text-[#E5E7EB] mt-2">
-            NexaMart is your one-stop online shop for quality products at great prices. Stay connected with us through social media.
-          </p>
+    <footer
+      className="text-white mt-5 py-5"
+      style={{ backgroundColor: "#1E3A8A" }}
+    >
+      <div className="container">
+        <div className="row g-4">
+          {/* Brand Section */}
+          <div className="col-md-6">
+            <Link
+              to="/"
+              className="fw-bold fs-3 text-decoration-none"
+              style={{ color: "#60A5FA" }}
+            >
+              NexaMart
+            </Link>
 
-          <div className="flex mt-4 gap-4">
-            <a href="#" className="p-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] hover:opacity-80 transition">
-              <FaFacebookF />
-            </a>
-            <a href="#" className="p-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] hover:opacity-80 transition">
-              <FaTwitter />
-            </a>
-            <a href="#" className="p-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] hover:opacity-80 transition">
-              <FaInstagram />
-            </a>
-            <a href="#" className="p-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] hover:opacity-80 transition">
-              <FaLinkedinIn />
-            </a>
+            <p className="mt-3" style={{ color: "#E5E7EB" }}>
+              NexaMart is your one-stop online shop for quality products at
+              great prices. Stay connected with us through social media.
+            </p>
+
+            <div className="d-flex gap-3 mt-3">
+              <a
+                href="#"
+                className="btn rounded-circle text-white"
+                style={{
+                  background: "linear-gradient(to right, #3B82F6, #60A5FA)",
+                }}
+              >
+                <FaFacebookF />
+              </a>
+
+              <a
+                href="#"
+                className="btn rounded-circle text-white"
+                style={{
+                  background: "linear-gradient(to right, #3B82F6, #60A5FA)",
+                }}
+              >
+                <FaTwitter />
+              </a>
+
+              <a
+                href="#"
+                className="btn rounded-circle text-white"
+                style={{
+                  background: "linear-gradient(to right, #3B82F6, #60A5FA)",
+                }}
+              >
+                <FaInstagram />
+              </a>
+
+              <a
+                href="#"
+                className="btn rounded-circle text-white"
+                style={{
+                  background: "linear-gradient(to right, #3B82F6, #60A5FA)",
+                }}
+              >
+                <FaLinkedinIn />
+              </a>
+            </div>
+          </div>
+
+          {/* Links Section */}
+          <div className="col-md-6">
+            <div className="row">
+              <div className="col-6">
+                <h5 style={{ color: "#60A5FA" }}>Shop</h5>
+                <div className="d-flex flex-column gap-2">
+                  <Link to="/" className="text-white text-decoration-none">
+                    Home
+                  </Link>
+                  <Link
+                    to="/products"
+                    className="text-white text-decoration-none"
+                  >
+                    Products
+                  </Link>
+                  <Link to="/cart" className="text-white text-decoration-none">
+                    Cart
+                  </Link>
+                </div>
+              </div>
+
+              <div className="col-6">
+                <h5 style={{ color: "#60A5FA" }}>Account</h5>
+                <div className="d-flex flex-column gap-2">
+                  <Link
+                    to="/profile"
+                    className="text-white text-decoration-none"
+                  >
+                    Profile
+                  </Link>
+                  <Link to="/login" className="text-white text-decoration-none">
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="text-white text-decoration-none"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="flex flex-col gap-3">
-            <h3 className="text-[#60A5FA] font-semibold">Shop</h3>
-            <Link to="/" className="hover:text-[#3B82F6] transition">Home</Link>
-            <Link to="/products" className="hover:text-[#3B82F6] transition">Products</Link>
-            <Link to="/cart" className="hover:text-[#3B82F6] transition">Cart</Link>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <h3 className="text-[#60A5FA] font-semibold">Account</h3>
-            <Link to="/profile" className="hover:text-[#3B82F6] transition">Profile</Link>
-            <Link to="/login" className="hover:text-[#3B82F6] transition">Sign In</Link>
-            <Link to="/register" className="hover:text-[#3B82F6] transition">Sign Up</Link>
-          </div>
+        {/* Bottom */}
+        <div
+          className="text-center mt-4 pt-3"
+          style={{
+            borderTop: "1px solid #3B82F6",
+            color: "#E5E7EB",
+            fontSize: "14px",
+          }}
+        >
+          © 2026 NexaMart. All rights reserved.
         </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto mt-10 border-t border-[#3B82F6] pt-4 text-center text-[#E5E7EB] text-sm">
-        © 2026 NexaMart. All rights reserved.
       </div>
     </footer>
   );
