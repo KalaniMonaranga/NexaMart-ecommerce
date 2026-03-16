@@ -1,1 +1,94 @@
-@import "tailwindcss";
+.icon-hover {
+  transition: transform 0.3s, color 0.3s;
+}
+.icon-hover:hover {
+  transform: scale(1.15);
+  color: #60A5FA;
+}
+
+.btn-hover {
+  transition: all 0.3s;
+}
+.btn-hover:hover {
+  opacity: 0.85;
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, #3B82F6, #60A5FA);
+  color: white;
+}
+
+.link-hover {
+  transition: color 0.3s;
+}
+.link-hover:hover {
+  color: #1E3A8A;
+}
+
+.category-card {
+  width: 130px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, border-radius 0.3s;
+}
+
+.category-card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 20px rgba(255, 255, 255, 0.25);
+}
+
+
+.category-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin: 0 auto;
+  transition: transform 0.3s, border-radius 0.3s;
+  background: none;
+}
+
+.category-card:hover .category-circle {
+  border-radius: 30%; 
+}
+
+.category-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.category-card:hover .category-circle img {
+  transform: scale(1.05); 
+}
+
+.category-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 10px;
+  color: #1E3A8A;
+  transition: color 0.3s;
+}
+
+.category-card:hover .category-label {
+  color: #3B82F6;
+}
+
+@media (max-width: 768px) {
+  .category-card {
+    width: 110px;
+  }
+
+  .category-circle {
+    width: 110px;
+    height: 110px;
+  }
+
+  .category-label {
+    font-size: 0.85rem;
+  }
+}
