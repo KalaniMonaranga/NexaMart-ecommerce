@@ -1,144 +1,154 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa";
+import {
+  FaHeart,
+  FaShoppingCart,
+  FaUserCircle,
+  FaSearch,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav
-      className="navbar navbar-expand-md shadow"
-      style={{ backgroundColor: "#1E3A8A", padding: "1rem 2rem" }}
+      className="shadow-sm fixed-top"
+      style={{ backgroundColor: "#1E3A8A", zIndex: 1000 }}
     >
-      <div className="container">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="navbar-brand fw-bold fs-3"
-          style={{ color: "#60A5FA" }}
-        >
-          NexaMart
-        </Link>
+      {/* Row 1 */}
+      <div className="container-fluid py-2 border-bottom border-light">
+        <div className="d-flex justify-content-between align-items-center flex-wrap">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="fw-bold fs-3 text-decoration-none text-primary"
+            style={{ color: "#60A5FA" }}
+          >
+            NexaMart
+          </Link>
 
-        {/* Mobile Toggle */}
-        <button
-          className="navbar-toggler border-0 text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-        </button>
+          {/* Right Side */}
+          <div className="d-flex align-items-center flex-wrap">
+            {/* Icons group */}
+            <div className="d-flex align-items-center gap-3 me-3">
+              {[
+                {
+                  to: "/wishlist",
+                  icon: <FaHeart />,
+                  badge: 2,
+                  badgeColor: "bg-danger",
+                },
+                {
+                  to: "/cart",
+                  icon: <FaShoppingCart />,
+                  badge: 3,
+                  badgeColor: "bg-warning text-dark",
+                },
+                { to: "/profile", icon: <FaUserCircle /> },
+              ].map((item, idx) => (
+                <Link
+                  key={idx}
+                  to={item.to}
+                  className="text-white position-relative icon-hover"
+                  style={{ fontSize: "1.3rem", lineHeight: "1" }} // control icon size
+                >
+                  {item.icon}
+                  {item.badge && (
+                    <span
+                      className={`position-absolute top-0 start-100 translate-middle badge rounded-pill ${item.badgeColor}`}
+                      style={{ fontSize: "0.65rem", padding: "0.25em 0.4em" }} // control badge size
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
 
-        {/* Desktop Menu */}
-        <div className="collapse navbar-collapse d-none d-md-flex justify-content-between">
-          <ul className="navbar-nav mx-auto gap-4">
-            <li className="nav-item">
-              <Link className="nav-link text-white fw-medium" to="/">
-                Home
+            {/* Buttons group */}
+            <div className="d-flex align-items-center gap-2">
+              <Link to="/login">
+                <button type="button" class="btn btn-primary">
+                  Sign In
+                </button>
               </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-white fw-medium" to="/products">
-                Products
+
+              <Link to="/register">
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-hover"
+                >
+                  Sign Up
+                </button>
               </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-white fw-medium" to="/cart">
-                Cart
-              </Link>
-            </li>
-          </ul>
+            </div>
 
-          <div className="d-flex gap-2">
-            <Link
-              to="/login"
-              className="btn"
-              style={{
-                background: "linear-gradient(to right, #3B82F6, #60A5FA)",
-                color: "white",
-              }}
+            {/* Mobile Toggle */}
+            <button
+              className="btn text-white d-lg-none ms-2"
+              onClick={() => setMenuOpen(!menuOpen)}
             >
-              Sign In
-            </Link>
-
-            <Link
-              to="/register"
-              className="btn"
-              style={{
-                background: "linear-gradient(to right, #3B82F6, #60A5FA)",
-                color: "white",
-              }}
-            >
-              Sign Up
-            </Link>
-
-            <Link
-              to="/profile"
-              className="btn btn-outline-light d-flex align-items-center gap-2"
-            >
-              <FaUserCircle />
-              Profile
-            </Link>
+              {menuOpen ? <FaTimes /> : <FaBars />}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Row 2 - Search */}
+      <div className="container-fluid py-3 bg-white">
+        <div className="row justify-content-center">
+          <div className="col-12 col-lg-8 d-flex flex-column flex-md-row gap-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search products..."
+            />
+            <button className="btn btn-primary">
+              <FaSearch />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3 - Categories */}
+      <div className="bg-light border-top d-none d-lg-block">
+        <div className="container py-2">
+          <div className="d-flex justify-content-center gap-5 flex-wrap">
+            {[
+              { name: "All Categories", path: "/categories" },
+              { name: "Offers", path: "/offers" },
+              { name: "For You", path: "/for-you" },
+              { name: "New Arrivals", path: "/new-arrivals" },
+            ].map((item, index) => (
+              <Link
+                key={index}
+                to={item.path}
+                className="text-dark text-decoration-none fw-medium link-hover"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown */}
       {menuOpen && (
-        <div
-          className="d-md-none position-absolute top-100 start-0 w-100 shadow"
-          style={{ backgroundColor: "#1E3A8A", padding: "1rem" }}
-        >
-          <div className="d-flex flex-column text-center gap-3">
-            <Link
-              to="/"
-              className="text-white text-decoration-none"
-              onClick={() => setMenuOpen(false)}
-            >
-              Home
+        <div className="bg-white shadow d-lg-none">
+          <div className="d-flex flex-column p-3 gap-3">
+            <Link to="/categories" className="text-dark text-decoration-none">
+              All Categories
             </Link>
-            <Link
-              to="/products"
-              className="text-white text-decoration-none"
-              onClick={() => setMenuOpen(false)}
-            >
-              Products
+            <Link to="/offers" className="text-dark text-decoration-none">
+              Offers
             </Link>
-            <Link
-              to="/cart"
-              className="text-white text-decoration-none"
-              onClick={() => setMenuOpen(false)}
-            >
-              Cart
+            <Link to="/for-you" className="text-dark text-decoration-none">
+              For You
             </Link>
-            <Link
-              to="/login"
-              className="btn"
-              style={{
-                background: "linear-gradient(to right, #3B82F6, #60A5FA)",
-                color: "white",
-              }}
-              onClick={() => setMenuOpen(false)}
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="btn"
-              style={{
-                background: "linear-gradient(to right, #3B82F6, #60A5FA)",
-                color: "white",
-              }}
-              onClick={() => setMenuOpen(false)}
-            >
-              Sign Up
-            </Link>
-            <Link
-              to="/profile"
-              className="btn btn-outline-light d-flex align-items-center justify-content-center gap-2"
-              onClick={() => setMenuOpen(false)}
-            >
-              <FaUserCircle />
-              Profile
+            <Link to="/new-arrivals" className="text-dark text-decoration-none">
+              New Arrivals
             </Link>
           </div>
         </div>
