@@ -1,9 +1,23 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiStar, FiShoppingCart, FiHeart, FiEye } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiStar,
+  FiShoppingCart,
+  FiHeart,
+  FiEye,
+} from "react-icons/fi";
 import { FaStar, FaStarHalfAlt, FaBolt } from "react-icons/fa";
 
-const ProductCard = ({ product, index, wishlist, toggleWishlist, addedIds, onAddToCart, badge }) => {
+const ProductCard = ({
+  product,
+  index,
+  wishlist,
+  toggleWishlist,
+  addedIds,
+  onAddToCart,
+  badge,
+}) => {
   const wished = wishlist.includes(product._id);
   const added = addedIds.includes(product._id);
   const fakeOld = (product.price * 1.3).toFixed(2);
@@ -13,7 +27,10 @@ const ProductCard = ({ product, index, wishlist, toggleWishlist, addedIds, onAdd
     <div className="fp-card" style={{ animationDelay: `${index * 0.09}s` }}>
       <div className="fp-img-wrap">
         <img
-          src={product.image || "https://placehold.co/400x400/EFF6FF/1E3A8A?text=Product"}
+          src={
+            product.image ||
+            "https://placehold.co/400x400/EFF6FF/1E3A8A?text=Product"
+          }
           alt={product.name}
           loading="lazy"
         />
@@ -31,7 +48,11 @@ const ProductCard = ({ product, index, wishlist, toggleWishlist, addedIds, onAdd
           >
             <FiHeart />
           </button>
-          <Link to={`/products/${product._id}`} className="fp-act-btn" aria-label="Quick view">
+          <Link
+            to={`/products/${product._id}`}
+            className="fp-act-btn"
+            aria-label="Quick view"
+          >
             <FiEye />
           </Link>
         </div>
@@ -39,7 +60,9 @@ const ProductCard = ({ product, index, wishlist, toggleWishlist, addedIds, onAdd
 
       <div className="fp-body">
         <div className="fp-stars">
-          {[...Array(4)].map((_, s) => <FaStar key={s} />)}
+          {[...Array(4)].map((_, s) => (
+            <FaStar key={s} />
+          ))}
           <FaStarHalfAlt />
           <span>(42)</span>
         </div>
@@ -307,7 +330,9 @@ export default function FeaturedProducts({ products }) {
   const [addedIds, setAddedIds] = useState([]);
 
   const toggleWishlist = (id) =>
-    setWishlist((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id]));
+    setWishlist((w) =>
+      w.includes(id) ? w.filter((x) => x !== id) : [...w, id],
+    );
 
   const onAddToCart = (id) => {
     setAddedIds((a) => [...a, id]);
@@ -325,29 +350,35 @@ export default function FeaturedProducts({ products }) {
             <div className="fp-hd-left">
               <div className="fp-accent" />
               <div>
-                <div className="fp-sublabel"><FaBolt /> Editor's Pick</div>
+                <div className="fp-sublabel">
+                  <FaBolt /> Editor's Pick
+                </div>
                 <div className="fp-title">Featured Products</div>
               </div>
             </div>
-            <Link to="/products" className="fp-see-all">Browse All <FiArrowRight /></Link>
+            <Link to="/products" className="fp-see-all">
+              Browse All <FiArrowRight />
+            </Link>
           </div>
 
           <div className="fp-grid">
             {products.length === 0 ? (
               <div className="fp-empty">No products available.</div>
             ) : (
-              products.slice(0, 4).map((p, i) => (
-                <ProductCard
-                  key={p._id}
-                  product={p}
-                  index={i}
-                  wishlist={wishlist}
-                  toggleWishlist={toggleWishlist}
-                  addedIds={addedIds}
-                  onAddToCart={onAddToCart}
-                  badge={badges[i]}
-                />
-              ))
+              products
+                .slice(0, 4)
+                .map((p, i) => (
+                  <ProductCard
+                    key={p._id}
+                    product={p}
+                    index={i}
+                    wishlist={wishlist}
+                    toggleWishlist={toggleWishlist}
+                    addedIds={addedIds}
+                    onAddToCart={onAddToCart}
+                    badge={badges[i]}
+                  />
+                ))
             )}
           </div>
         </div>

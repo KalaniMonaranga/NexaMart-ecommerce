@@ -10,13 +10,15 @@ import PopupBanner from "../components/PopupBanner";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
-  }, []);
+useEffect(() => {
+  axios
+    .get("http://localhost:5000/api/products")
+    .then((res) => {
+      console.log("Response:", res.data);    
+      setProducts(res.data.products || res.data);  
+    })
+    .catch((err) => console.error("Error:", err));
+}, []);
 
   return (
     <>
