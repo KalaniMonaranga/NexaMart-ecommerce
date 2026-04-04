@@ -1,20 +1,88 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// 1. Context Provider
+import { CartProvider } from './context/CartContext'; 
+
+// 2. Styles
+import './App.css';
+
+// 3. Components
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+// 4. Pages
+import Home from './Pages/Home';
+import Shop from './Pages/Shop';
+import WishlistPage from './Pages/WishlistPage';
+import AdminPanel from './Pages/AdminPanel'; 
+import AccountPage from './Pages/AccountPage';
+import ProductPage from './Pages/ProductPage';
+import Cart from './Pages/Cart';
+import Login from './Pages/Login'; // 🟢 Added Login
+import Register from './Pages/Register'; // 🟢 Added Register
 
 function App() {
+  // 🟢 GET REAL USER DATA (Replaces testUser)
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+  // Wishlist State
+  const [wishlistItems, setWishlistItems] = useState([]);
+
+  const addToWishlist = (product) => {
+    if (!wishlistItems.find((item) => item._id === product._id)) {
+      setWishlistItems([...wishlistItems, product]);
+    }
+  };
+
+  const removeFromWishlist = (id) => {
+    setWishlistItems(wishlistItems.filter((item) => item._id !== id));
+  };
+
   return (
-    // 1. The Router must be the very first thing!
-    <Router>
-      <Navbar /> 
-      
-      <div style={{ padding: '20px' }}>
-        <Routes>
-          <Route path="/" element={<h1>Welcome to NexaMart Catalogue</h1>} />
-          <Route path="/cart" element={<h1>Your Shopping Cart</h1>} />
-          <Route path="/login" element={<h1>Login to your Account</h1>} />
-        </Routes>
-      </div>
-    </Router>
+    <CartProvider>
+      <Router>
+        {/* Pass real userInfo to Navbar */}
+        <Navbar user={userInfo} wishlistCount={wishlistItems.length} /> 
+        
+        <main style={{ minHeight: '80vh' }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            
+            {/* 🟢 Login & Register Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            <Route path="/wishlist" element={
+              <WishlistPage 
+                wishlistItems={wishlistItems} 
+                removeFromWishlist={removeFromWishlist} 
+              />
+            } />
+            
+            {/* 🟢 PROTECTED: Cart (Redirects to Login if guest) */}
+            <Route path="/cart" element={
+              userInfo ? <Cart /> : <Navigate to="/login" />
+            } />
+
+            {/* 🟢 PROTECTED: Admin (Redirects to Login if not admin) */}
+            <Route path="/admin" element={
+              userInfo?.isAdmin || userInfo?.role === 'admin' ? 
+              <AdminPanel user={userInfo} /> : <Navigate to="/login" />
+            } />
+
+            <Route path="/account" element={
+              userInfo ? <AccountPage user={userInfo} /> : <Navigate to="/login" />
+            } />
+            
+            <Route path="/product/:id" element={<ProductPage addToWishlist={addToWishlist} />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </Router>
+    </CartProvider>
   );
 }
 

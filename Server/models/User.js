@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { 
@@ -12,40 +11,30 @@ const userSchema = new mongoose.Schema({
     unique: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email']
   },
-
-phone: {
-  type: String,
-  unique: true,
-  sparse: true // Allows users to have either email OR phone
-},
-
-phone: {
+  phone: {
     type: String,
     unique: true,
-    sparse: true // This is IMPORTANT: it allows some users to NOT have a phone while others do
+    sparse: true
   },
-
   password: { 
     type: String, 
     required: [true, 'Please add a password'],
     minlength: 6,
-    select: false // This prevents the password from being sent in API responses by default
+    select: false
   },
   role: { 
     type: String, 
     enum: ['user', 'admin'], 
     default: 'user' 
+  },
+  address: {
+    type: String,
+    default: ''
+  },
+  profilePic: {
+    type: String,
+    default: ''
   }
 }, { timestamps: true });
-
-// Encryption Middleware: Automatically hashes password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    next();
-  }
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
 
 module.exports = mongoose.model('User', userSchema);

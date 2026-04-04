@@ -11,7 +11,7 @@ const seedProducts = [
     price: 999,
     category: "Electronics",
     countInStock: 10,
-    imageUrl: "https://via.placeholder.com/150"
+    images: ["https://via.placeholder.com/150"]
   },
   {
     name: "UltraLight Laptop",
@@ -19,7 +19,7 @@ const seedProducts = [
     price: 1500,
     category: "Electronics",
     countInStock: 5,
-    imageUrl: "https://via.placeholder.com/150"
+    images: ["https://via.placeholder.com/150"]
   }
 ];
 
