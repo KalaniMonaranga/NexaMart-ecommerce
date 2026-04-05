@@ -11,6 +11,10 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
+  // Order History state
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+
   // Initialize all items as selected when cart loads
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -18,6 +22,30 @@ const Cart = () => {
       setSelectAll(true);
     }
   }, [cartItems.length]);
+  
+  // Fetch recent orders
+  useEffect(() => {
+    const fetchRecentOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/orders/myorders', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response.ok) {
+          const ordersData = await response.json();
+          setRecentOrders(ordersData.slice(0, 3)); // Get only last 3 orders
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchRecentOrders();
+  }, []);
 
   // Handle individual item selection
   const handleSelectItem = (itemId) => {
@@ -93,6 +121,17 @@ const Cart = () => {
       return item.images[0];
     }
     return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=80';
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Processing': return { bg: '#fff3cd', text: '#856404', border: '#ffc107' };
+      case 'Confirmed': return { bg: '#d1ecf1', text: '#0c5460', border: '#17a2b8' };
+      case 'Shipped': return { bg: '#cce5ff', text: '#004085', border: '#003366' };
+      case 'Delivered': return { bg: '#d4edda', text: '#155724', border: '#28a745' };
+      case 'Cancelled': return { bg: '#f8d7da', text: '#721c24', border: '#dc3545' };
+      default: return { bg: '#f8f9fa', text: '#6c757d', border: '#dee2e6' };
+    }
   };
 
   return (
@@ -283,6 +322,59 @@ const Cart = () => {
                     Secure Checkout
                   </small>
                 </div>
+                
+                {/* Order History Section */}
+                {recentOrders.length > 0 && (
+                  <div className="card border-0 shadow-sm mt-4">
+                    <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                      <h6 className="fw-bold mb-0" style={{ color: '#003366' }}>
+                        <i className="bi bi-clock-history me-2"></i>Recent Orders
+                      </h6>
+                      <Link to="/my-orders" className="btn btn-sm btn-outline-primary">
+                        View All Orders
+                      </Link>
+                    </div>
+                    <div className="card-body p-0">
+                      {recentOrders.map((order) => {
+                        const colors = getStatusColor(order.status);
+                        return (
+                          <div 
+                            key={order._id} 
+                            className="p-3 border-bottom cursor-pointer hover-bg-light"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => navigate(`/order/${order._id}`)}
+                          >
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <h6 className="fw-bold mb-1">
+                                  Order #{order._id.slice(-8).toUpperCase()}
+                                </h6>
+                                <small className="text-muted">
+                                  {new Date(order.createdAt).toLocaleDateString()} • {order.orderItems.length} items
+                                </small>
+                              </div>
+                              <div className="text-end">
+                                <span 
+                                  className="badge mb-1"
+                                  style={{ 
+                                    backgroundColor: colors.bg, 
+                                    color: colors.text,
+                                    border: `1px solid ${colors.border}`
+                                  }}
+                                >
+                                  {order.status}
+                                </span>
+                                <h6 className="fw-bold text-primary mb-0">
+                                  {formatCurrencyDisplay(order.totalPrice)}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

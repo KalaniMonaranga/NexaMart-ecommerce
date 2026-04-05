@@ -39,6 +39,13 @@ const Navbar = () => {
             <li className="nav-item">
               <Link className="nav-link text-white px-3 fw-500" to="/shop">SHOP</Link>
             </li>
+            {user && (
+              <li className="nav-item">
+                <Link className="nav-link text-white px-3 fw-500" to="/my-orders">
+                  <i className="bi bi-truck me-1"></i>MY ORDERS
+                </Link>
+              </li>
+            )}
             <li className="nav-item">
               <Link className="nav-link text-white px-3 fw-500 position-relative" to="/wishlist">
                 WISHLIST
