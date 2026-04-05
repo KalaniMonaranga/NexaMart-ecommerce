@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatCurrencyDisplay } from '../utils/currency.js';
@@ -6,10 +6,63 @@ import { formatCurrencyDisplay } from '../utils/currency.js';
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
   const navigate = useNavigate();
+  
+  // State to track selected items
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Initialize all items as selected when cart loads
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      setSelectedItems(cartItems.map(item => item._id));
+      setSelectAll(true);
+    }
+  }, [cartItems.length]);
+
+  // Handle individual item selection
+  const handleSelectItem = (itemId) => {
+    setSelectedItems(prev => {
+      if (prev.includes(itemId)) {
+        const newSelected = prev.filter(id => id !== itemId);
+        setSelectAll(newSelected.length === cartItems.length);
+        return newSelected;
+      } else {
+        const newSelected = [...prev, itemId];
+        setSelectAll(newSelected.length === cartItems.length);
+        return newSelected;
+      }
+    });
+  };
+
+  // Handle select all
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItems([]);
+      setSelectAll(false);
+    } else {
+      setSelectedItems(cartItems.map(item => item._id));
+      setSelectAll(true);
+    }
+  };
+
+  // Get selected cart items
+  const getSelectedCartItems = () => {
+    return cartItems.filter(item => selectedItems.includes(item._id));
+  };
+
+  // Calculate totals for selected items only
+  const getSelectedTotalPrice = () => {
+    return getSelectedCartItems().reduce((total, item) => {
+      const price = parseFloat(item.priceAtPurchase || item.price || 0);
+      return total + (price * item.quantity);
+    }, 0);
+  };
 
   const handleRemoveFromCart = (productId) => {
     if (window.confirm('Are you sure you want to remove this item from cart?')) {
       removeFromCart(productId);
+      // Also remove from selected items
+      setSelectedItems(prev => prev.filter(id => id !== productId));
     }
   };
 
@@ -18,6 +71,22 @@ const Cart = () => {
       updateQuantity(productId, newQuantity);
     }
   };
+
+  const handleCheckout = () => {
+    if (selectedItems.length === 0) {
+      alert('Please select at least one item to checkout');
+      return;
+    }
+    
+    // Store selected items for checkout
+    const selectedCartItems = getSelectedCartItems();
+    localStorage.setItem('nexamart_selected_cart', JSON.stringify(selectedCartItems));
+    
+    navigate('/checkout');
+  };
+
+  const selectedCount = selectedItems.length;
+  const selectedTotal = getSelectedTotalPrice();
 
   const getImageUrl = (item) => {
     if (item.images && item.images.length > 0) {
@@ -48,21 +117,55 @@ const Cart = () => {
           ) : (
             <div className="row">
               <div className="col-md-8">
-                <div className="mb-3">
-                  <small className="text-muted">{cartItems.length} items in cart</small>
+                {/* Selection Controls */}
+                <div className="d-flex justify-content-between align-items-center mb-3 bg-light p-3 rounded">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="selectAll"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                    />
+                    <label className="form-check-label fw-bold" htmlFor="selectAll">
+                      Select All Items
+                    </label>
+                  </div>
+                  <small className="text-muted">
+                    {selectedCount} of {cartItems.length} selected
+                  </small>
                 </div>
                 
-                {cartItems.map((item) => (
-                  <div key={item._id} className="card mb-3 border-0 shadow-sm">
-                    <div className="row g-0 p-3">
-                      <div className="col-md-2">
-                        <img 
-                          src={getImageUrl(item)} 
-                          className="img-fluid rounded" 
-                          alt={item.name}
-                          style={{ height: '80px', objectFit: 'cover' }}
-                        />
-                      </div>
+                {cartItems.map((item) => {
+                  const isSelected = selectedItems.includes(item._id);
+                  return (
+                    <div 
+                      key={item._id} 
+                      className={`card mb-3 border-0 shadow-sm ${isSelected ? 'border-primary' : ''}`}
+                      style={{ borderLeft: isSelected ? '4px solid #003366' : '4px solid transparent' }}
+                    >
+                      <div className="row g-0 p-3">
+                        {/* Checkbox Column */}
+                        <div className="col-md-1 d-flex align-items-center justify-content-center">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleSelectItem(item._id)}
+                              style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="col-md-2">
+                          <img 
+                            src={getImageUrl(item)} 
+                            className="img-fluid rounded" 
+                            alt={item.name}
+                            style={{ height: '80px', objectFit: 'cover' }}
+                          />
+                        </div>
                       <div className="col-md-6">
                         <h5 className="card-title fw-bold">{item.name}</h5>
                         <p className="text-muted small mb-1">{item.description}</p>
@@ -105,9 +208,10 @@ const Cart = () => {
                           <i className="bi bi-trash"></i>
                         </button>
                       </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               <div className="col-md-4">
@@ -117,24 +221,28 @@ const Cart = () => {
                     <hr />
                     
                     <div className="d-flex justify-content-between mb-2">
-                      <span>Subtotal ({cartItems.length} items):</span>
-                      <span className="fw-bold">{formatCurrencyDisplay(getTotalPrice())}</span>
+                      <span>Selected Items ({selectedCount}):</span>
+                      <span className="fw-bold">{formatCurrencyDisplay(selectedTotal)}</span>
                     </div>
                     
                     <div className="d-flex justify-content-between mb-2">
                       <span>Shipping:</span>
-                      <span className="text-success">FREE</span>
+                      <span className="text-success">
+                        {selectedTotal >= 5000 ? 'FREE' : formatCurrencyDisplay(300)}
+                      </span>
                     </div>
                     
                     <div className="d-flex justify-content-between mb-2">
-                      <span>Tax:</span>
-                      <span>{formatCurrencyDisplay(getTotalPrice() * 0.1)}</span>
+                      <span>Tax (10%):</span>
+                      <span>{formatCurrencyDisplay(selectedTotal * 0.1)}</span>
                     </div>
                     
                     <hr />
                     <div className="d-flex justify-content-between fw-bold fs-5">
                       <span>Total:</span>
-                      <span className="text-primary">{formatCurrencyDisplay(getTotalPrice() * 1.1)}</span>
+                      <span className="text-primary">
+                        {formatCurrencyDisplay(selectedTotal * 1.1 + (selectedTotal >= 5000 ? 0 : 300))}
+                      </span>
                     </div>
                     
                     <div className="alert alert-success small mt-3" role="alert">
@@ -144,11 +252,22 @@ const Cart = () => {
                     
                     <button 
                       className="btn btn-lg btn-primary w-100 mt-3 rounded-0 fw-bold"
-                      onClick={() => navigate('/checkout')}
+                      onClick={handleCheckout}
+                      disabled={selectedCount === 0}
                     >
                       <i className="bi bi-credit-card me-2"></i>
                       PROCEED TO CHECKOUT
+                      {selectedCount > 0 && (
+                        <span className="badge bg-white text-primary ms-2">{selectedCount}</span>
+                      )}
                     </button>
+                    
+                    {selectedCount > 0 && selectedCount < cartItems.length && (
+                      <div className="alert alert-info small mt-2" role="alert">
+                        <i className="bi bi-info-circle me-2"></i>
+                        Only {selectedCount} item(s) selected for checkout
+                      </div>
+                    )}
                     
                     <Link to="/" className="btn btn-outline-secondary w-100 mt-2 rounded-0">
                       <i className="bi bi-arrow-left me-2"></i>

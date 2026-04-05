@@ -10,6 +10,18 @@ const Checkout = () => {
   const { cartItems, getTotalPrice, clearCart } = useCart();
   const { user } = useAuth();
   
+  // Get selected items from localStorage
+  const [selectedCartItems, setSelectedCartItems] = useState([]);
+  
+  useEffect(() => {
+    const savedSelectedCart = localStorage.getItem('nexamart_selected_cart');
+    if (savedSelectedCart) {
+      setSelectedCartItems(JSON.parse(savedSelectedCart));
+    } else {
+      setSelectedCartItems(cartItems);
+    }
+  }, [cartItems]);
+  
   const [shippingAddress, setShippingAddress] = useState({
     address: user?.address || '',
     city: '',
@@ -28,9 +40,12 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  const itemsPrice = getTotalPrice();
-  const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const taxPrice = itemsPrice * 0.08; // 8% tax
+  // Calculate totals based on selected items only
+  const itemsPrice = selectedCartItems.reduce((total, item) => {
+    return total + ((item.priceAtPurchase || item.price) * item.quantity);
+  }, 0);
+  const shippingPrice = itemsPrice >= 5000 ? 0 : 300;
+  const taxPrice = itemsPrice * 0.1; // 10% tax
   const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
   const handleShippingSubmit = (e) => {
@@ -43,13 +58,13 @@ const Checkout = () => {
     setLoading(true);
     
     try {
-      // Create order
+      // Create order with selected items only
       const orderData = {
-        orderItems: cartItems.map(item => ({
+        orderItems: selectedCartItems.map(item => ({
           name: item.name,
           quantity: item.quantity,
           image: item.images?.[0] || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
-          price: item.price,
+          price: item.priceAtPurchase || item.price,
           product: item._id
         })),
         shippingAddress,
@@ -103,16 +118,16 @@ const Checkout = () => {
     }
   };
 
-  if (cartItems.length === 0) {
+  if (selectedCartItems.length === 0) {
     return (
       <div className="container py-5 text-center">
-        <h2>Your cart is empty</h2>
-        <p>Add some items to your cart to checkout</p>
+        <h2>No items selected for checkout</h2>
+        <p>Please select items from your cart to checkout</p>
         <button 
           className="btn btn-primary mt-3"
-          onClick={() => navigate('/shop')}
+          onClick={() => navigate('/cart')}
         >
-          Continue Shopping
+          Go to Cart
         </button>
       </div>
     );
@@ -299,13 +314,13 @@ const Checkout = () => {
               <h5 className="mb-0">Order Summary</h5>
             </div>
             <div className="card-body">
-              {cartItems.map((item) => (
+              {selectedCartItems.map((item) => (
                 <div key={item._id} className="d-flex justify-content-between mb-2">
                   <div>
                     <h6 className="mb-0">{item.name}</h6>
                     <small className="text-muted">Qty: {item.quantity}</small>
                   </div>
-                  <div>{formatCurrencyDisplay(item.price * item.quantity)}</div>
+                  <div>{formatCurrencyDisplay((item.priceAtPurchase || item.price) * item.quantity)}</div>
                 </div>
               ))}
               
