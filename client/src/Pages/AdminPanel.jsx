@@ -3,10 +3,12 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrencyDisplay } from '../utils/currency.js';
+import AdminOrderManagement from '../components/AdminOrderManagement.jsx';
 
 const AdminPanel = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -278,99 +280,135 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="container py-5">
+    <div className="container py-5" style={{ marginTop: '60px' }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold" style={{color: '#003366'}}>NexaMart Admin Dashboard</h2>
-        <button 
-          onClick={addSampleProducts}
-          className="btn btn-success"
-        >
-          <i className="bi bi-plus-circle me-2"></i>
-          Add Sample Products
-        </button>
+        <h2 className="fw-bold" style={{color: '#003366'}}>
+          <i className="bi bi-speedometer2 me-2"></i>NexaMart Admin Dashboard
+        </h2>
       </div>
 
-      <div className="card shadow-sm border-0 rounded-0 p-4 mb-5 border-top border-4" style={{borderColor: '#00AEEF'}}>
-        <h5 className="fw-bold mb-4" style={{color: '#003366'}}>Add New Product</h5>
-        <form onSubmit={handleSubmit} className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label fw-bold small">Product Name</label>
-            <input type="text" className="form-control rounded-0" value={name} onChange={(e) => setName(e.target.value)} required />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label fw-bold small">Price (LKR)</label>
-            <input type="number" step="0.01" className="form-control rounded-0" value={price} onChange={(e) => setPrice(e.target.value)} required />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label fw-bold small">Initial Stock</label>
-            <input type="number" className="form-control rounded-0" value={stock} onChange={(e) => setStock(e.target.value)} required />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label fw-bold small">Category</label>
-            <select className="form-select rounded-0" value={category} onChange={(e) => setCategory(e.target.value)}>
-              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label className="form-label fw-bold small">Product Image</label>
-            <input type="file" className="form-control rounded-0" onChange={(e) => setImages(e.target.files)} />
-          </div>
-          <div className="col-12">
-            <label className="form-label fw-bold small">Short Description</label>
-            <input type="text" className="form-control rounded-0" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          </div>
-          <div className="col-12 mt-4">
-            <button type="submit" className="btn w-100 py-3 fw-bold rounded-0 text-white" style={{backgroundColor: '#00AEEF'}}>
-                SAVE TO INVENTORY
+      {/* Tab Navigation */}
+      <ul className="nav nav-tabs mb-4">
+        <li className="nav-item">
+          <button 
+            className={`nav-link ${activeTab === 'products' ? 'active fw-bold' : ''}`}
+            onClick={() => setActiveTab('products')}
+            style={{ color: activeTab === 'products' ? '#003366' : '#6c757d' }}
+          >
+            <i className="bi bi-box-seam me-2"></i>Products Management
+          </button>
+        </li>
+        <li className="nav-item">
+          <button 
+            className={`nav-link ${activeTab === 'orders' ? 'active fw-bold' : ''}`}
+            onClick={() => setActiveTab('orders')}
+            style={{ color: activeTab === 'orders' ? '#003366' : '#6c757d' }}
+          >
+            <i className="bi bi-truck me-2"></i>Order Management
+            <span className="badge bg-primary ms-2">Live</span>
+          </button>
+        </li>
+      </ul>
+
+      {/* Products Tab Content */}
+      {activeTab === 'products' && (
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <button 
+              onClick={addSampleProducts}
+              className="btn btn-success"
+            >
+              <i className="bi bi-plus-circle me-2"></i>
+              Add Sample Products
             </button>
           </div>
-        </form>
-      </div>
 
-      <h4 className="fw-bold mb-3" style={{color: '#003366'}}>Live Inventory Management</h4>
-      <div className="table-responsive bg-white rounded-0 shadow-sm p-3 border">
-        <table className="table align-middle">
-          <thead className="bg-light">
-            <tr className="small text-uppercase">
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock Status</th>
-              <th className="text-end px-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map(p => (
-              <tr key={p._id} style={{cursor: 'pointer'}} onClick={() => viewProductDetails(p)}>
-                <td className="fw-bold">{p.name}</td>
-                <td><span className="badge rounded-0 px-2 py-1" style={{backgroundColor: '#e9ecef', color: '#003366'}}>{p.category}</span></td>
-                <td className="fw-bold text-primary">{formatCurrencyDisplay(p.price)}</td>
-                <td>
-                   <span className={`badge rounded-0 ${p.countInStock < 10 ? "bg-danger" : "bg-success"}`}>
-                    {p.countInStock} Units
-                   </span>
-                </td>
-                <td className="text-end px-4" onClick={(e) => e.stopPropagation()}>
-                  <button 
-                    onClick={() => editProduct(p)} 
-                    className="btn btn-sm btn-warning d-inline-flex align-items-center gap-2 me-2"
-                  >
-                    <i className="bi bi-pencil-fill"></i>
-                    <span>Edit</span>
-                  </button>
-                  <button 
-                    onClick={() => deleteProduct(p._id)} 
-                    className="btn btn-sm btn-danger d-inline-flex align-items-center gap-2"
-                  >
-                    <i className="bi bi-trash3-fill"></i>
-                    <span>Delete</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <div className="card shadow-sm border-0 rounded-0 p-4 mb-5 border-top border-4" style={{borderColor: '#00AEEF'}}>
+            <h5 className="fw-bold mb-4" style={{color: '#003366'}}>Add New Product</h5>
+            <form onSubmit={handleSubmit} className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label fw-bold small">Product Name</label>
+                <input type="text" className="form-control rounded-0" value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label fw-bold small">Price (LKR)</label>
+                <input type="number" step="0.01" className="form-control rounded-0" value={price} onChange={(e) => setPrice(e.target.value)} required />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label fw-bold small">Initial Stock</label>
+                <input type="number" className="form-control rounded-0" value={stock} onChange={(e) => setStock(e.target.value)} required />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label fw-bold small">Category</label>
+                <select className="form-select rounded-0" value={category} onChange={(e) => setCategory(e.target.value)}>
+                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label fw-bold small">Product Image</label>
+                <input type="file" className="form-control rounded-0" onChange={(e) => setImages(e.target.files)} />
+              </div>
+              <div className="col-12">
+                <label className="form-label fw-bold small">Short Description</label>
+                <input type="text" className="form-control rounded-0" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              </div>
+              <div className="col-12 mt-4">
+                <button type="submit" className="btn w-100 py-3 fw-bold rounded-0 text-white" style={{backgroundColor: '#00AEEF'}}>
+                    SAVE TO INVENTORY
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <h4 className="fw-bold mb-3" style={{color: '#003366'}}>Live Inventory Management</h4>
+          <div className="table-responsive bg-white rounded-0 shadow-sm p-3 border">
+            <table className="table align-middle">
+              <thead className="bg-light">
+                <tr className="small text-uppercase">
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock Status</th>
+                  <th className="text-end px-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map(p => (
+                  <tr key={p._id} style={{cursor: 'pointer'}} onClick={() => viewProductDetails(p)}>
+                    <td className="fw-bold">{p.name}</td>
+                    <td><span className="badge rounded-0 px-2 py-1" style={{backgroundColor: '#e9ecef', color: '#003366'}}>{p.category}</span></td>
+                    <td className="fw-bold text-primary">{formatCurrencyDisplay(p.price)}</td>
+                    <td>
+                       <span className={`badge rounded-0 ${p.countInStock < 10 ? "bg-danger" : "bg-success"}`}>
+                        {p.countInStock} Units
+                       </span>
+                    </td>
+                    <td className="text-end px-4" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        onClick={() => editProduct(p)} 
+                        className="btn btn-sm btn-warning d-inline-flex align-items-center gap-2 me-2"
+                      >
+                        <i className="bi bi-pencil-fill"></i>
+                        <span>Edit</span>
+                      </button>
+                      <button 
+                        onClick={() => deleteProduct(p._id)} 
+                        className="btn btn-sm btn-danger d-inline-flex align-items-center gap-2"
+                      >
+                        <i className="bi bi-trash3-fill"></i>
+                        <span>Delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Orders Tab Content */}
+      {activeTab === 'orders' && <AdminOrderManagement />}
 
       {/* Product Details Modal */}
       {showModal && selectedProduct && (

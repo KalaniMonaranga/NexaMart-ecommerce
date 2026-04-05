@@ -130,18 +130,24 @@ const OrderSuccess = () => {
                 </div>
               </div>
 
-              <div className="d-flex gap-2 justify-content-center">
+              <div className="d-flex gap-2 justify-content-center flex-wrap">
                 <button 
                   className="btn btn-primary"
-                  onClick={() => navigate('/my-orders')}
+                  onClick={() => navigate(`/order/${order._id}`)}
                 >
-                  View My Orders
+                  <i className="bi bi-geo-alt me-2"></i>Track Order
                 </button>
                 <button 
                   className="btn btn-outline-primary"
+                  onClick={() => navigate('/my-orders')}
+                >
+                  <i className="bi bi-list-ul me-2"></i>View My Orders
+                </button>
+                <button 
+                  className="btn btn-outline-secondary"
                   onClick={() => navigate('/shop')}
                 >
-                  Continue Shopping
+                  <i className="bi bi-shop me-2"></i>Continue Shopping
                 </button>
               </div>
 

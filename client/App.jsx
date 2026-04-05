@@ -25,6 +25,7 @@ import Register from "./src/Pages/Register";
 import Checkout from "./src/Pages/Checkout";
 import OrderSuccess from "./src/Pages/OrderSuccess";
 import MyOrders from "./src/Pages/MyOrders";
+import OrderTracking from "./src/Pages/OrderTracking";
 import ForgotPassword from "./src/Pages/ForgotPassword";
 import ResetPassword from "./src/Pages/ResetPassword";
 import EditProduct from "./src/Pages/EditProduct";
@@ -55,6 +56,7 @@ function App() {
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+                  <Route path="/order/:orderId" element={<OrderTracking />} />
                   <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/account" element={<AccountPage />} />
                   <Route path="/admin" element={<AdminPanel />} />
