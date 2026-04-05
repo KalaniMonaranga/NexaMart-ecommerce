@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 
@@ -7,6 +7,18 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [page, setPage] = useState(1);
+  const scrollRef = useRef(null);
+
+  const scrollHorizontally = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300; // width of card + gap
+      scrollRef.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,8 +82,48 @@ const Home = () => {
       </div>
 
       <div className="container">
-        {/* 2. Categories Section */}
+
+        {/* 1.5. Featured Products Carousel (User Friendly Horizontal Scroll) */}
         <div className="mb-5">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h3 className="fw-bold text-navy mb-0">Trending Now</h3>
+            <div className="d-flex gap-2">
+              <button 
+                onClick={() => scrollHorizontally('left')}
+                className="btn btn-outline-primary rounded-circle shadow-sm" 
+                style={{ width: '40px', height: '40px' }}
+              >
+                <i className="bi bi-chevron-left"></i>
+              </button>
+              <button 
+                onClick={() => scrollHorizontally('right')}
+                className="btn btn-outline-primary rounded-circle shadow-sm" 
+                style={{ width: '40px', height: '40px' }}
+              >
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div 
+            ref={scrollRef}
+            className="d-flex overflow-auto pb-4 custom-scrollbar" 
+            style={{ gap: '1.5rem', scrollBehavior: 'smooth', scrollSnapType: 'x mandatory' }}
+          >
+            {products.slice(0, 8).map(product => (
+              <div 
+                key={product._id} 
+                className="flex-shrink-0"
+                style={{ width: '280px', scrollSnapAlign: 'start' }}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 2. Categories Section */}
+        <div className="mb-5 mt-5">
           <div className="text-center mb-4">
             <h2 className="fw-bold text-navy">Shop by Category</h2>
             <div style={{ width: '60px', height: '3px', backgroundColor: '#00AEEF', margin: '10px auto' }}></div>
@@ -80,7 +132,7 @@ const Home = () => {
           <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
             <button 
               className={`btn ${selectedCategory === 'All' ? 'btn-primary' : 'btn-outline-primary'} rounded-pill px-4 py-2`}
-              onClick={() => setSelectedCategory('All')}
+              onClick={() => { setSelectedCategory('All'); setPage(1); }}
             >
               All Products
             </button>
@@ -88,7 +140,7 @@ const Home = () => {
               <button 
                 key={category}
                 className={`btn ${selectedCategory === category ? 'btn-primary' : 'btn-outline-primary'} rounded-pill px-4 py-2`}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => { setSelectedCategory(category); setPage(1); }}
               >
                 {category}
               </button>
@@ -105,24 +157,51 @@ const Home = () => {
           <p className="text-muted">{filteredProducts.length} products found</p>
         </div>
 
-        {/* 4. Product Grid */}
+        {/* 4. Product Grid (4x3 Layout = 12 Items per page) */}
         <div className="row">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map(product => (
+            filteredProducts.slice((page - 1) * 12, page * 12).map(product => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product._id}>
                 <ProductCard product={product} />
               </div>
             ))
           ) : (
-            <div className="text-center col-12 py-5">
+            <div className="text-center w-100 py-5">
               <i className="bi bi-search" style={{fontSize: '48px', color: '#ccc'}}></i>
               <p className="text-muted mt-3">No products found in this category.</p>
             </div>
           )}
         </div>
+
+        {/* 5. Pagination & View Full Shop Button */}
+        {filteredProducts.length > 0 && (
+          <div className="d-flex justify-content-center align-items-center gap-3 mb-5 mt-4">
+            <button 
+              className="btn btn-outline-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center" 
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 12 ? 'visible' : 'hidden' }}
+            >
+              <i className="bi bi-chevron-left fs-5"></i>
+            </button>
+            
+            <a href="/shop" className="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+              Explore All {filteredProducts.length} Products
+            </a>
+            
+            <button 
+              className="btn btn-outline-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center" 
+              onClick={() => setPage(page + 1)}
+              disabled={page * 12 >= filteredProducts.length}
+              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 12 ? 'visible' : 'hidden' }}
+            >
+              <i className="bi bi-chevron-right fs-5"></i>
+            </button>
+          </div>
+        )}
       </div>
       
-      {/* 5. Feature Section */}
+      {/* 6. Feature Section */}
       <div className="bg-light py-5 mt-5">
         <div className="container">
           <div className="row text-center g-4">

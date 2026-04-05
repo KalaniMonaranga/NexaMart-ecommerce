@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ScrollToTop from "./src/components/ScrollToTop";
 import Footer from "./src/components/Footer";
 
 // 1. Context Provider
@@ -38,6 +39,7 @@ function App() {
       <CartProvider>
         <WishlistProvider>
           <Router>
+            <ScrollToTop />
             {/* We move the background color here to cover the whole screen */}
             <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
