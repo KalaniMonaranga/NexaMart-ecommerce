@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { formatCurrencyDisplay } from '../utils/currency.js';
 
 const WishlistPage = () => {
   const { wishlistItems, removeFromWishlist, moveToCart } = useWishlist();
@@ -87,7 +88,7 @@ const WishlistPage = () => {
                       
                       <div className="mt-auto">
                         <div className="d-flex justify-content-between align-items-center mb-3">
-                          <span className="fw-bold fs-5 text-primary">${item.price}</span>
+                          <span className="fw-bold fs-5 text-primary">{formatCurrencyDisplay(item.price)}</span>
                           {item.countInStock > 0 ? (
                             <span className="badge bg-success">In Stock</span>
                           ) : (

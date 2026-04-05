@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useCart } from '../context/CartContext.jsx';
+import { formatCurrencyDisplay } from '../utils/currency.js';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -71,12 +72,15 @@ const ProductDetail = () => {
         <div className="col-md-6">
           <div className="product-image-container p-3 border bg-light">
             <img 
-              src={product.images && product.images.length > 0 
-                ? `http://localhost:5000${product.images[0]}` 
-                : `http://localhost:5000${product.image}`} 
+              src={(() => {
+                const img = product.images?.[0] || product.image;
+                if (!img) return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400';
+                return img.startsWith('http') ? img : `http://localhost:5000${img}`;
+              })()} 
               className="img-fluid w-100" 
               alt={product.name} 
               style={{ maxHeight: '500px', objectFit: 'contain' }}
+              onError={(e) => {e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400'}}
             />
           </div>
         </div>
@@ -92,7 +96,7 @@ const ProductDetail = () => {
           <h1 className="fw-bold text-navy mb-2" style={{color: '#003366'}}>{product.name}</h1>
           
           <div className="d-flex align-items-center mb-3">
-             <h2 className="fw-bold mb-0" style={{color: '#003366'}}>Rs. {currentPrice.toLocaleString()}</h2>
+             <h2 className="fw-bold mb-0" style={{color: '#003366'}}>{formatCurrencyDisplay(currentPrice)}</h2>
              {product.countInStock > 0 ? (
                <span className="ms-3 badge bg-success-subtle text-success border border-success border-opacity-25 rounded-0">IN STOCK</span>
              ) : (

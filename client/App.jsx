@@ -21,7 +21,13 @@ import ProductDetail from './src/Pages/ProductDetail';
 import WishlistPage from './src/Pages/WishlistPage';
 import Cart from "./src/Pages/Cart";
 import Login from "./src/Pages/Login";
-import Register from "./src/Pages/Register"; 
+import Register from "./src/Pages/Register";
+import Checkout from "./src/Pages/Checkout";
+import OrderSuccess from "./src/Pages/OrderSuccess";
+import MyOrders from "./src/Pages/MyOrders";
+import ForgotPassword from "./src/Pages/ForgotPassword";
+import ResetPassword from "./src/Pages/ResetPassword";
+import EditProduct from "./src/Pages/EditProduct";
 
 function App() {
   return (
@@ -42,11 +48,17 @@ function App() {
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+                  <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/account" element={<AccountPage />} />
                   <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="/edit-product/:id" element={<EditProduct />} />
                 </Routes>
               </main>
               

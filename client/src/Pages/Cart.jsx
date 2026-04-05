@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
+import { formatCurrencyDisplay } from '../utils/currency.js';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
+  const navigate = useNavigate();
 
   const handleRemoveFromCart = (productId) => {
     if (window.confirm('Are you sure you want to remove this item from cart?')) {
@@ -67,7 +69,7 @@ const Cart = () => {
                         <p className="text-muted small mb-2">
                           <i className="bi bi-tag me-1"></i>{item.category}
                         </p>
-                        <p className="fw-bold text-primary fs-5">${item.priceAtPurchase || item.price}</p>
+                        <p className="fw-bold text-primary fs-5">{formatCurrencyDisplay(item.priceAtPurchase || item.price)}</p>
                       </div>
                       <div className="col-md-2">
                         <label className="form-label small">Quantity</label>
@@ -92,7 +94,7 @@ const Cart = () => {
                         <div className="mb-2">
                           <small className="text-muted">Subtotal</small>
                           <h5 className="fw-bold text-primary">
-                            ${((item.priceAtPurchase || item.price) * item.quantity).toFixed(2)}
+                            {formatCurrencyDisplay((item.priceAtPurchase || item.price) * item.quantity)}
                           </h5>
                         </div>
                         <button 
@@ -116,7 +118,7 @@ const Cart = () => {
                     
                     <div className="d-flex justify-content-between mb-2">
                       <span>Subtotal ({cartItems.length} items):</span>
-                      <span className="fw-bold">${getTotalPrice().toFixed(2)}</span>
+                      <span className="fw-bold">{formatCurrencyDisplay(getTotalPrice())}</span>
                     </div>
                     
                     <div className="d-flex justify-content-between mb-2">
@@ -126,21 +128,24 @@ const Cart = () => {
                     
                     <div className="d-flex justify-content-between mb-2">
                       <span>Tax:</span>
-                      <span>${(getTotalPrice() * 0.1).toFixed(2)}</span>
+                      <span>{formatCurrencyDisplay(getTotalPrice() * 0.1)}</span>
                     </div>
                     
                     <hr />
                     <div className="d-flex justify-content-between fw-bold fs-5">
                       <span>Total:</span>
-                      <span className="text-primary">${(getTotalPrice() * 1.1).toFixed(2)}</span>
+                      <span className="text-primary">{formatCurrencyDisplay(getTotalPrice() * 1.1)}</span>
                     </div>
                     
                     <div className="alert alert-success small mt-3" role="alert">
                       <i className="bi bi-truck me-2"></i>
-                      Free shipping on orders over $50
+                      Free shipping on orders over Rs. 5,000
                     </div>
                     
-                    <button className="btn btn-lg btn-primary w-100 mt-3 rounded-0 fw-bold">
+                    <button 
+                      className="btn btn-lg btn-primary w-100 mt-3 rounded-0 fw-bold"
+                      onClick={() => navigate('/checkout')}
+                    >
                       <i className="bi bi-credit-card me-2"></i>
                       PROCEED TO CHECKOUT
                     </button>

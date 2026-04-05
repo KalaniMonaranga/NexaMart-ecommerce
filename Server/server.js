@@ -38,9 +38,11 @@ app.use('/uploads', express.static(path.join(__dirname_resolved, '/uploads')));
 // 6. API ROUTES
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {

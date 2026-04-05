@@ -10,7 +10,11 @@ const {
   login,         // Added
   getUserProfile, 
   updateUserProfile, 
-  registerAdminByAdmin 
+  registerAdminByAdmin,
+  forgotPassword,
+  resetPassword,
+  getAllUsers,
+  deleteUser
 } = require('../controllers/authController'); 
 
 // --- DEBUG LOGS ---
@@ -25,6 +29,8 @@ router.get('/test', (req, res) => {
 // --- PUBLIC ROUTES (No Token Needed) ---
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 // --- PROTECTED ROUTES (Token Needed) ---
 // Profile Route (Get data or Update data)
@@ -35,5 +41,12 @@ router.route('/profile')
 // --- ADMIN ONLY ROUTES ---
 // Only an existing Admin can register another Admin
 router.post('/register-admin', protect, admin, registerAdminByAdmin);
+
+// Get all users and delete user (Admin only)
+router.route('/')
+  .get(protect, admin, getAllUsers);
+
+router.route('/:id')
+  .delete(protect, admin, deleteUser);
 
 module.exports = router;
