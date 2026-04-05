@@ -3,10 +3,14 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useCart } from '../context/CartContext.jsx';
 import { formatCurrencyDisplay } from '../utils/currency.js';
+import StarRating from '../components/StarRating.jsx';
+import RatingForm from '../components/RatingForm.jsx';
+import ReviewsList from '../components/ReviewsList.jsx';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [weight, setWeight] = useState(1); 
   const [loading, setLoading] = useState(true);
@@ -32,6 +36,12 @@ const ProductDetail = () => {
       try {
         const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
         setProduct(data);
+        // Fetch reviews
+        const reviewsRes = await fetch(`http://localhost:5000/api/products/${id}/reviews`);
+        if (reviewsRes.ok) {
+          const reviewsData = await reviewsRes.json();
+          setReviews(reviewsData);
+        }
         setLoading(false);
       } catch (err) {
         console.error("Error fetching product", err);
@@ -94,6 +104,15 @@ const ProductDetail = () => {
           </nav>
 
           <h1 className="fw-bold text-navy mb-2" style={{color: '#003366'}}>{product.name}</h1>
+          
+          {/* Rating Display */}
+          <div className="mb-3">
+            <StarRating 
+              rating={product.rating || 0} 
+              numReviews={product.numReviews || 0} 
+              size="md"
+            />
+          </div>
           
           <div className="d-flex align-items-center mb-3">
              <h2 className="fw-bold mb-0" style={{color: '#003366'}}>{formatCurrencyDisplay(currentPrice)}</h2>
@@ -177,6 +196,29 @@ const ProductDetail = () => {
         </ul>
         <div className="p-4 border">
           <p className="mb-0 text-muted">{product.information || "Detailed product specifications and instructions will appear here."}</p>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-5 pt-3">
+        <h3 className="fw-bold mb-4" style={{ color: '#003366' }}>
+          <i className="bi bi-star-fill me-2 text-warning"></i>Customer Reviews
+        </h3>
+        <div className="row">
+          <div className="col-md-4">
+            <RatingForm 
+              productId={id} 
+              onReviewAdded={() => {
+                // Refresh reviews after adding
+                fetch(`http://localhost:5000/api/products/${id}/reviews`)
+                  .then(res => res.json())
+                  .then(data => setReviews(data));
+              }}
+            />
+          </div>
+          <div className="col-md-8">
+            <ReviewsList reviews={reviews} />
+          </div>
         </div>
       </div>
     </div>

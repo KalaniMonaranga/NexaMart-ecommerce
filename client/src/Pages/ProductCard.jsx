@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import StarRating from '../components/StarRating.jsx';
 
 const ProductCard = ({ product }) => {
   // 1. Handle the image source carefully (Array vs String)
@@ -35,6 +36,14 @@ const ProductCard = ({ product }) => {
           <h6 className="fw-bold text-truncate mb-2" title={product.name} style={{ color: '#333' }}>
             {product.name}
           </h6>
+          {/* Star Rating */}
+          <div className="mb-2 d-flex justify-content-center">
+            <StarRating 
+              rating={product.rating || 0} 
+              numReviews={product.numReviews || 0} 
+              size="sm"
+            />
+          </div>
           <h5 className="fw-bold mb-3" style={{ color: '#003366' }}>
             Rs. {product.price?.toLocaleString()}
           </h5>

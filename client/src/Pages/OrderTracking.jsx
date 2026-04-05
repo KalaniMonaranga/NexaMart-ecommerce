@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { formatCurrencyDisplay } from '../utils/currency.js';
 
 const OrderTracking = () => {
   const { orderId } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -225,10 +226,15 @@ const OrderTracking = () => {
         {/* Order Items */}
         <div className="col-md-8">
           <div className="card border-0 shadow-sm mb-4">
-            <div className="card-header bg-white py-3">
+            <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
               <h5 className="fw-bold mb-0">
                 <i className="bi bi-box-seam me-2"></i>Order Items
               </h5>
+              {order.status === 'Delivered' && (
+                <span className="badge bg-success">
+                  <i className="bi bi-check-circle me-1"></i>Ready to Rate
+                </span>
+              )}
             </div>
             <div className="card-body">
               {order.orderItems.map((item, index) => (
@@ -247,9 +253,18 @@ const OrderTracking = () => {
                     </p>
                   </div>
                   <div className="text-end">
-                    <h6 className="fw-bold text-primary mb-0">
+                    <h6 className="fw-bold text-primary mb-2">
                       {formatCurrencyDisplay(item.price * item.quantity)}
                     </h6>
+                    {order.status === 'Delivered' && (
+                      <button 
+                        className="btn btn-sm btn-outline-warning"
+                        onClick={() => navigate(`/product/${item.product}`)}
+                        title="Rate this product"
+                      >
+                        <i className="bi bi-star me-1"></i>Rate
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

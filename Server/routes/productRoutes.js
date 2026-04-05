@@ -94,7 +94,7 @@ router.put('/:id', protect, admin, async (req, res) => {
 // 5. DELETE PRODUCT 
 router.delete('/:id', protect, admin, async (req, res) => {
   try {
-    // 🟢 Debug log to see who is trying to delete
+    // Debug log to see who is trying to delete
     console.log(`Delete request for ${req.params.id} from user: ${req.user._id}`);
     
     const product = await Product.findById(req.params.id);
@@ -108,6 +108,61 @@ router.delete('/:id', protect, admin, async (req, res) => {
   } catch (error) {
     console.error("DELETE ERROR:", error.message);
     res.status(500).json({ message: 'Server Error: Could not delete' });
+  }
+});
+
+// 6. CREATE PRODUCT REVIEW
+router.post('/:id/reviews', protect, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+      // Check if user already reviewed this product
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
+
+      if (alreadyReviewed) {
+        return res.status(400).json({ message: 'Product already reviewed' });
+      }
+
+      // Create new review
+      const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id,
+      };
+
+      product.reviews.push(review);
+      product.numReviews = product.reviews.length;
+      product.rating =
+        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        product.reviews.length;
+
+      await product.save();
+      res.status(201).json({ message: 'Review added' });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error("REVIEW ERROR:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 7. GET PRODUCT REVIEWS
+router.get('/:id/reviews', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      res.json(product.reviews);
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
