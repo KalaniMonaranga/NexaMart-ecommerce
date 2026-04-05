@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrencyDisplay } from '../utils/currency.js';
 import AdminOrderManagement from '../components/AdminOrderManagement.jsx';
+import AdminChat from '../components/AdminChat.jsx';
 
 const AdminPanel = () => {
   const { user } = useAuth();
@@ -380,23 +381,18 @@ const AdminPanel = () => {
                     <td className="fw-bold text-primary">{formatCurrencyDisplay(p.price)}</td>
                     <td>
                        <span className={`badge rounded-0 ${p.countInStock < 10 ? "bg-danger" : "bg-success"}`}>
-                        {p.countInStock} Units
+                         {p.countInStock} in stock
                        </span>
                     </td>
-                    <td className="text-end px-4" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        onClick={() => editProduct(p)} 
-                        className="btn btn-sm btn-warning d-inline-flex align-items-center gap-2 me-2"
-                      >
-                        <i className="bi bi-pencil-fill"></i>
-                        <span>Edit</span>
+                    <td>
+                      <button className="btn btn-sm btn-outline-primary me-1" onClick={(e) => { e.stopPropagation(); viewProductDetails(p); }}>
+                        <i className="bi bi-eye"></i>
                       </button>
-                      <button 
-                        onClick={() => deleteProduct(p._id)} 
-                        className="btn btn-sm btn-danger d-inline-flex align-items-center gap-2"
-                      >
-                        <i className="bi bi-trash3-fill"></i>
-                        <span>Delete</span>
+                      <button className="btn btn-sm btn-outline-warning me-1" onClick={(e) => { e.stopPropagation(); openEditModal(p); }}>
+                        <i className="bi bi-pencil"></i>
+                      </button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={(e) => { e.stopPropagation(); handleDeleteProduct(p._id); }}>
+                        <i className="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -407,8 +403,10 @@ const AdminPanel = () => {
         </>
       )}
 
-      {/* Orders Tab Content */}
-      {activeTab === 'orders' && <AdminOrderManagement />}
+      {/* Chat Tab */}
+      {activeTab === 'chat' && (
+        <AdminChat />
+      )}
 
       {/* Product Details Modal */}
       {showModal && selectedProduct && (
