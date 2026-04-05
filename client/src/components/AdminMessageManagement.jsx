@@ -12,7 +12,6 @@ const AdminMessageManagement = () => {
   const [filter, setFilter] = useState('all');
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Fetch messages with real-time updates
   const fetchMessages = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -40,7 +39,6 @@ const AdminMessageManagement = () => {
 
   useEffect(() => {
     fetchMessages();
-    // Real-time updates every 10 seconds
     const interval = setInterval(fetchMessages, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -160,7 +158,6 @@ const AdminMessageManagement = () => {
   return (
     <div className="container py-4">
       <div className="row">
-        {/* Header */}
         <div className="col-12 mb-4">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="fw-bold" style={{ color: '#003366' }}>
@@ -170,10 +167,7 @@ const AdminMessageManagement = () => {
                 <span className="badge bg-danger ms-2">{unreadCount} new</span>
               )}
             </h2>
-            <button 
-              className="btn btn-outline-primary"
-              onClick={fetchMessages}
-            >
+            <button className="btn btn-outline-primary" onClick={fetchMessages}>
               <i className="bi bi-arrow-clockwise me-1"></i>Refresh
             </button>
           </div>
@@ -193,37 +187,23 @@ const AdminMessageManagement = () => {
           )}
         </div>
 
-        {/* Filter Tabs */}
         <div className="col-12 mb-3">
           <div className="btn-group">
-            <button 
-              className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setFilter('all')}
-            >
+            <button className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('all')}>
               All ({messages.length})
             </button>
-            <button 
-              className={`btn ${filter === 'unread' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setFilter('unread')}
-            >
+            <button className={`btn ${filter === 'unread' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('unread')}>
               Unread ({messages.filter(m => !m.isRead).length})
             </button>
-            <button 
-              className={`btn ${filter === 'open' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setFilter('open')}
-            >
+            <button className={`btn ${filter === 'open' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('open')}>
               Open ({messages.filter(m => m.status === 'Open').length})
             </button>
-            <button 
-              className={`btn ${filter === 'resolved' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setFilter('resolved')}
-            >
+            <button className={`btn ${filter === 'resolved' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setFilter('resolved')}>
               Resolved ({messages.filter(m => m.status === 'Resolved').length})
             </button>
           </div>
         </div>
 
-        {/* Message List */}
         <div className="col-md-5 mb-4">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white py-3">
@@ -240,9 +220,7 @@ const AdminMessageManagement = () => {
                   filteredMessages.map((message) => (
                     <div
                       key={message._id}
-                      className={`p-3 border-bottom cursor-pointer ${
-                        selectedMessage?._id === message._id ? 'bg-light' : ''
-                      } ${!message.isRead ? 'bg-info bg-opacity-10' : ''}`}
+                      className={`p-3 border-bottom cursor-pointer ${selectedMessage?._id === message._id ? 'bg-light' : ''} ${!message.isRead ? 'bg-info bg-opacity-10' : ''}`}
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
                         setSelectedMessage(message);
@@ -251,15 +229,11 @@ const AdminMessageManagement = () => {
                     >
                       <div className="d-flex justify-content-between align-items-start mb-1">
                         <h6 className="fw-bold mb-0">{message.name}</h6>
-                        {!message.isRead && (
-                          <span className="badge bg-danger">New</span>
-                        )}
+                        {!message.isRead && <span className="badge bg-danger">New</span>}
                       </div>
                       <p className="text-muted small mb-1 text-truncate">{message.subject}</p>
                       <div className="d-flex justify-content-between align-items-center">
-                        <small className="text-muted">
-                          {new Date(message.createdAt).toLocaleDateString()}
-                        </small>
+                        <small className="text-muted">{new Date(message.createdAt).toLocaleDateString()}</small>
                         {getStatusBadge(message.status)}
                       </div>
                     </div>
@@ -270,24 +244,16 @@ const AdminMessageManagement = () => {
           </div>
         </div>
 
-        {/* Message Detail */}
         <div className="col-md-7">
           {selectedMessage ? (
             <div className="card border-0 shadow-sm">
               <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 className="fw-bold mb-0">Message Details</h5>
                 <div>
-                  <button
-                    className="btn btn-sm btn-outline-danger me-2"
-                    onClick={() => deleteMessage(selectedMessage._id)}
-                  >
+                  <button className="btn btn-sm btn-outline-danger me-2" onClick={() => deleteMessage(selectedMessage._id)}>
                     <i className="bi bi-trash"></i>
                   </button>
-                  <select
-                    className="form-select form-select-sm d-inline-block w-auto"
-                    value={selectedMessage.status}
-                    onChange={(e) => updateStatus(selectedMessage._id, e.target.value)}
-                  >
+                  <select className="form-select form-select-sm d-inline-block w-auto" value={selectedMessage.status} onChange={(e) => updateStatus(selectedMessage._id, e.target.value)}>
                     <option value="Open">Open</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Resolved">Resolved</option>
@@ -296,38 +262,25 @@ const AdminMessageManagement = () => {
                 </div>
               </div>
               <div className="card-body">
-                {/* Sender Info */}
                 <div className="mb-4">
                   <h6 className="fw-bold">From:</h6>
                   <div className="d-flex align-items-center mb-2">
-                    <div 
-                      className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                      style={{ width: '40px', height: '40px' }}
-                    >
-                      <span className="fw-bold">
-                        {selectedMessage.name.charAt(0).toUpperCase()}
-                      </span>
+                    <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style={{ width: '40px', height: '40px' }}>
+                      <span className="fw-bold">{selectedMessage.name.charAt(0).toUpperCase()}</span>
                     </div>
                     <div>
                       <p className="mb-0 fw-bold">{selectedMessage.name}</p>
-                      <small className="text-muted">
-                        <i className="bi bi-envelope me-1"></i>{selectedMessage.email}
-                      </small>
+                      <small className="text-muted"><i className="bi bi-envelope me-1"></i>{selectedMessage.email}</small>
                     </div>
                   </div>
-                  <p className="text-muted small mb-0">
-                    <i className="bi bi-calendar me-1"></i>
-                    {new Date(selectedMessage.createdAt).toLocaleString()}
-                  </p>
+                  <p className="text-muted small mb-0"><i className="bi bi-calendar me-1"></i>{new Date(selectedMessage.createdAt).toLocaleString()}</p>
                 </div>
 
-                {/* Subject */}
                 <div className="mb-4">
                   <h6 className="fw-bold">Subject:</h6>
                   <p className="mb-0">{selectedMessage.subject}</p>
                 </div>
 
-                {/* Message Content */}
                 <div className="mb-4">
                   <h6 className="fw-bold">Message:</h6>
                   <div className="p-3 bg-light rounded">
@@ -335,7 +288,6 @@ const AdminMessageManagement = () => {
                   </div>
                 </div>
 
-                {/* Replies */}
                 {selectedMessage.replies && selectedMessage.replies.length > 0 && (
                   <div className="mb-4">
                     <h6 className="fw-bold">Replies:</h6>
@@ -343,9 +295,7 @@ const AdminMessageManagement = () => {
                       <div key={index} className="p-3 bg-success bg-opacity-10 rounded mb-2">
                         <div className="d-flex justify-content-between align-items-start mb-2">
                           <span className="fw-bold text-success">{reply.adminName} (Admin)</span>
-                          <small className="text-muted">
-                            {new Date(reply.createdAt).toLocaleString()}
-                          </small>
+                          <small className="text-muted">{new Date(reply.createdAt).toLocaleString()}</small>
                         </div>
                         <p className="mb-0">{reply.message}</p>
                       </div>
@@ -353,20 +303,10 @@ const AdminMessageManagement = () => {
                   </div>
                 )}
 
-                {/* Reply Form */}
                 <div className="mb-3">
                   <h6 className="fw-bold">Send Reply:</h6>
-                  <textarea
-                    className="form-control mb-3"
-                    rows="4"
-                    placeholder="Type your reply here..."
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                  ></textarea>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleReply(selectedMessage._id)}
-                  >
+                  <textarea className="form-control mb-3" rows="4" placeholder="Type your reply here..." value={replyText} onChange={(e) => setReplyText(e.target.value)}></textarea>
+                  <button className="btn btn-primary" onClick={() => handleReply(selectedMessage._id)}>
                     <i className="bi bi-reply me-2"></i>Send Reply
                   </button>
                 </div>

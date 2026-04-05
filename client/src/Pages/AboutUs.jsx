@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutUs = () => {
   return (
-    <div className="container py-5">
+    <div className="container py-5" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       {/* Page Header */}
       <div className="row mb-5">
         <div className="col-12 text-center">

@@ -29,6 +29,8 @@ import OrderTracking from "./src/Pages/OrderTracking";
 import ForgotPassword from "./src/Pages/ForgotPassword";
 import ResetPassword from "./src/Pages/ResetPassword";
 import EditProduct from "./src/Pages/EditProduct";
+import AboutUs from "./src/Pages/AboutUs";
+import ContactUs from "./src/Pages/ContactUs";
 
 function App() {
   return (
@@ -61,6 +63,8 @@ function App() {
                   <Route path="/account" element={<AccountPage />} />
                   <Route path="/admin" element={<AdminPanel />} />
                   <Route path="/edit-product/:id" element={<EditProduct />} />
+                  <Route path="/about" element={<AboutUs />} />
+                  <Route path="/contact" element={<ContactUs />} />
                 </Routes>
               </main>
               

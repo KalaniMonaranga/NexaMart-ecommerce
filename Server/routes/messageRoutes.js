@@ -3,12 +3,27 @@ const router = express.Router();
 const Message = require('../models/Message');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// 1. CREATE MESSAGE (Public - anyone can send)
+// 1. CREATE MESSAGE (Public, but will associate with user if logged in)
 router.post('/', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
+    
+    // Check if user is logged in (optional association)
+    let user = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer')) {
+      try {
+        const token = authHeader.split(' ')[1];
+        const decoded = require('jsonwebtoken').verify(token, process.env.JWT_SECRET);
+        user = decoded.id;
+      } catch (err) {
+        // Ignore token errors for public route
+        console.log("Optional Auth error in message creation (skipping association)");
+      }
+    }
 
     const newMessage = new Message({
+      user,
       name,
       email,
       subject,
@@ -23,7 +38,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. GET ALL MESSAGES (Admin only)
+// 2. GET MY MESSAGES (Customer - fetch messages by their email)
+router.get('/my-messages', protect, async (req, res) => {
+  try {
+    const messages = await Message.find({ email: req.user.email }).sort({ createdAt: -1 });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 3. GET ALL MESSAGES (Admin only)
 router.get('/', protect, admin, async (req, res) => {
   try {
     const messages = await Message.find({}).sort({ createdAt: -1 });

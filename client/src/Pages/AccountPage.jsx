@@ -215,6 +215,10 @@ const AccountPage = () => {
                       >
                         <i className="bi bi-pencil-square me-2"></i> Edit Profile
                       </button>
+
+                      <Link to="/contact" state={{ tab: 'messages' }} className="btn btn-outline-primary btn-lg rounded-0 fw-bold">
+                        <i className="bi bi-envelope me-2"></i> My Messages
+                      </Link>
                       
                       {/* 4. Admin Link using Sky Blue (#00AEEF) */}
                       {user.role === 'admin' && (
