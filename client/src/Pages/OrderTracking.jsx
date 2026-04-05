@@ -7,6 +7,8 @@ const OrderTracking = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isLive, setIsLive] = useState(true);
 
   const fetchOrder = async () => {
     try {
@@ -19,6 +21,8 @@ const OrderTracking = () => {
       if (response.ok) {
         const orderData = await response.json();
         setOrder(orderData);
+        setLastUpdated(new Date());
+        setError('');
       } else {
         setError('Order not found');
       }
@@ -33,9 +37,12 @@ const OrderTracking = () => {
   // Poll for updates every 10 seconds
   useEffect(() => {
     fetchOrder();
-    const interval = setInterval(fetchOrder, 10000);
+    let interval;
+    if (isLive) {
+      interval = setInterval(fetchOrder, 10000);
+    }
     return () => clearInterval(interval);
-  }, [orderId]);
+  }, [orderId, isLive]);
 
   const getStatusSteps = () => {
     return [
@@ -99,6 +106,36 @@ const OrderTracking = () => {
           <p className="text-muted mb-0">Order ID: <strong>{order._id}</strong></p>
         </div>
         <div className="text-end">
+          {/* Live Status Indicator */}
+          <div className="d-flex align-items-center justify-content-end mb-2">
+            <span 
+              className="badge bg-success me-2 d-flex align-items-center"
+              style={{ fontSize: '11px' }}
+            >
+              <span 
+                className="spinner-grow spinner-grow-sm me-1" 
+                style={{ width: '8px', height: '8px' }}
+              ></span>
+              LIVE
+            </span>
+            <small className="text-muted">
+              Updated: {lastUpdated.toLocaleTimeString()}
+            </small>
+            <button 
+              className="btn btn-sm btn-outline-secondary ms-2"
+              onClick={() => setIsLive(!isLive)}
+              title={isLive ? 'Pause updates' : 'Resume updates'}
+            >
+              <i className={`bi ${isLive ? 'bi-pause-fill' : 'bi-play-fill'}`}></i>
+            </button>
+            <button 
+              className="btn btn-sm btn-outline-primary ms-1"
+              onClick={fetchOrder}
+              title="Refresh now"
+            >
+              <i className="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
           <span 
             className="badge fs-6 px-3 py-2"
             style={{ 
