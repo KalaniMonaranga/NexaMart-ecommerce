@@ -6,7 +6,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 // Auto-reply questions and answers
 const autoReplies = {
   'order status': 'You can check your order status in the "My Orders" section or click on "Order Tracking" in the navigation menu.',
-  'delivery time': 'Our standard delivery time is 3-5 business days for local orders and 7-10 business days for international orders.',
+  'delivery time': 'For food items and fresh products: Same day or next day delivery. For general products: 3-5 business days for local orders and 7-10 business days for international orders.',
   'return policy': 'We offer a 30-day return policy for all unused items. Please visit the "My Orders" page to initiate a return.',
   'payment methods': 'We accept Credit/Debit Cards (Visa, MasterCard), PayPal, and Cash on Delivery for local orders.',
   'track order': 'You can track your order by going to "My Orders" and clicking "Track Order" on your specific order.',
@@ -210,7 +210,24 @@ router.put('/:id/close', protect, admin, async (req, res) => {
   }
 });
 
-// 7. GET AUTO-REPLY OPTIONS (Public)
+// 7. DELETE CHAT (Admin only)
+router.delete('/:id', protect, admin, async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.id);
+    
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+    
+    await Chat.deleteOne({ _id: req.params.id });
+    res.json({ message: 'Chat deleted successfully' });
+  } catch (error) {
+    console.error('DELETE CHAT ERROR:', error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 8. GET AUTO-REPLY OPTIONS (Public)
 router.get('/auto-reply-options', async (req, res) => {
   try {
     const options = Object.keys(autoReplies).map((key) => ({
