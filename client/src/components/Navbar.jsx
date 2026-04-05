@@ -57,6 +57,12 @@ const Navbar = () => {
                 )}
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link text-white px-3 fw-500" to="/about">ABOUT</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link text-white px-3 fw-500" to="/contact">CONTACT</Link>
+            </li>
           </ul>
 
           {/* 4. RIGHT SIDE (Icons & Auth) */}

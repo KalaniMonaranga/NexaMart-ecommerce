@@ -29,7 +29,6 @@ import OrderTracking from "./src/Pages/OrderTracking";
 import ForgotPassword from "./src/Pages/ForgotPassword";
 import ResetPassword from "./src/Pages/ResetPassword";
 import EditProduct from "./src/Pages/EditProduct";
-import ChatWidget from "./src/components/ChatWidget";
 
 function App() {
   return (
@@ -66,7 +65,6 @@ function App() {
               </main>
               
               {/* You can add a <Footer /> here later */}
-              <ChatWidget />
             </div>
           </Router>
         </WishlistProvider>

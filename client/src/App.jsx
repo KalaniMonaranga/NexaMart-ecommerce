@@ -19,11 +19,13 @@ import AdminPanel from './Pages/AdminPanel';
 import AccountPage from './Pages/AccountPage';
 import ProductPage from './Pages/ProductPage';
 import Cart from './Pages/Cart';
-import Login from './Pages/Login'; // 🟢 Added Login
-import Register from './Pages/Register'; // 🟢 Added Register
+import Login from './Pages/Login'; // Added Login
+import Register from './Pages/Register'; // Added Register
+import AboutUs from './Pages/AboutUs';
+import ContactUs from './Pages/ContactUs';
 
 function App() {
-  // 🟢 GET REAL USER DATA (Replaces testUser)
+  // GET REAL USER DATA (Replaces testUser)
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   // Wishlist State
@@ -50,7 +52,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
             
-            {/* 🟢 Login & Register Routes */}
+            {/* Login & Register Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
@@ -61,12 +63,12 @@ function App() {
               />
             } />
             
-            {/* 🟢 PROTECTED: Cart (Redirects to Login if guest) */}
+            {/* PROTECTED: Cart (Redirects to Login if guest) */}
             <Route path="/cart" element={
               userInfo ? <Cart /> : <Navigate to="/login" />
             } />
 
-            {/* 🟢 PROTECTED: Admin (Redirects to Login if not admin) */}
+            {/* PROTECTED: Admin (Redirects to Login if not admin) */}
             <Route path="/admin" element={
               userInfo?.isAdmin || userInfo?.role === 'admin' ? 
               <AdminPanel user={userInfo} /> : <Navigate to="/login" />
@@ -77,6 +79,10 @@ function App() {
             } />
             
             <Route path="/product/:id" element={<ProductPage addToWishlist={addToWishlist} />} />
+            
+            {/* About and Contact Routes */}
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
           </Routes>
         </main>
 
