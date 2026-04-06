@@ -11,6 +11,7 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   
   // Modal states
@@ -271,6 +272,11 @@ const AdminPanel = () => {
     }
   };
 
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading && products.length === 0) {
     return (
       <div className="container py-5 text-center">
@@ -371,49 +377,132 @@ const AdminPanel = () => {
             </form>
           </div>
 
-          <h4 className="fw-bold mb-3" style={{color: '#003366'}}>Live Inventory Management</h4>
-          <div className="table-responsive bg-white rounded-0 shadow-sm p-3 border">
-            <table className="table align-middle">
-              <thead className="bg-light">
-                <tr className="small text-uppercase">
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Stock Status</th>
-                  <th className="text-end px-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(p => (
-                  <tr key={p._id} style={{cursor: 'pointer'}} onClick={() => viewProductDetails(p)}>
-                    <td className="fw-bold">{p.name}</td>
-                    <td><span className="badge rounded-0 px-2 py-1" style={{backgroundColor: '#e9ecef', color: '#003366'}}>{p.category}</span></td>
-                    <td className="fw-bold text-primary">{formatCurrencyDisplay(p.price)}</td>
-                    <td>
-                       <span className={`badge rounded-0 ${p.countInStock < 10 ? "bg-danger" : "bg-success"}`}>
-                        {p.countInStock} Units
-                       </span>
-                    </td>
-                    <td className="text-end px-4" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        onClick={() => editProduct(p)} 
-                        className="btn btn-sm btn-warning d-inline-flex align-items-center gap-2 me-2"
-                      >
-                        <i className="bi bi-pencil-fill"></i>
-                        <span>Edit</span>
-                      </button>
-                      <button 
-                        onClick={() => deleteProduct(p._id)} 
-                        className="btn btn-sm btn-danger d-inline-flex align-items-center gap-2"
-                      >
-                        <i className="bi bi-trash3-fill"></i>
-                        <span>Delete</span>
-                      </button>
-                    </td>
+          <div className="row g-3 mb-4">
+            <div className="col-md-4">
+              <div className="card border-0 rounded-0 shadow-sm p-3 border-start border-4 border-primary">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted small fw-bold text-uppercase mb-1">Total Products</h6>
+                    <h3 className="fw-bold mb-0">{products.length}</h3>
+                  </div>
+                  <div className="bg-primary bg-opacity-10 p-3 rounded">
+                    <i className="bi bi-box-seam text-primary fs-3"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card border-0 rounded-0 shadow-sm p-3 border-start border-4 border-warning">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted small fw-bold text-uppercase mb-1">Low Stock</h6>
+                    <h3 className="fw-bold mb-0 text-warning">{products.filter(p => p.countInStock > 0 && p.countInStock < 10).length}</h3>
+                  </div>
+                  <div className="bg-warning bg-opacity-10 p-3 rounded">
+                    <i className="bi bi-exclamation-triangle text-warning fs-3"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card border-0 rounded-0 shadow-sm p-3 border-start border-4 border-danger">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="text-muted small fw-bold text-uppercase mb-1">Out of Stock</h6>
+                    <h3 className="fw-bold mb-0 text-danger">{products.filter(p => p.countInStock === 0).length}</h3>
+                  </div>
+                  <div className="bg-danger bg-opacity-10 p-3 rounded">
+                    <i className="bi bi-x-circle text-danger fs-3"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <h4 className="fw-bold mb-0" style={{color: '#003366'}}>Live Inventory Management</h4>
+            <div className="position-relative" style={{ minWidth: '300px' }}>
+              <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+              <input 
+                type="text" 
+                className="form-control ps-5 rounded-pill border-primary-subtle" 
+                placeholder="Search by product name or category..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="card shadow-sm border-0 rounded-0 mb-4 overflow-hidden">
+            <div className="table-responsive" style={{ maxHeight: '750px', overflowY: 'auto' }}>
+              <table className="table align-middle table-hover mb-0">
+                <thead className="sticky-top shadow-sm" style={{ backgroundColor: '#f8f9fa', zIndex: 5, top: '-1px' }}>
+                  <tr className="small text-uppercase">
+                    <th className="ps-4 py-3" style={{width: '30%'}}>Product Name</th>
+                    <th className="py-3">Category</th>
+                    <th className="py-3">Price</th>
+                    <th className="py-3">Stock Status</th>
+                    <th className="text-end px-4 py-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map(p => (
+                      <tr key={p._id} style={{cursor: 'pointer'}} onClick={() => viewProductDetails(p)}>
+                        <td className="fw-bold ps-4">
+                          <div className="d-flex align-items-center gap-3">
+                            {p.images && p.images[0] && (
+                              <img src={p.images[0]} alt="" style={{width: '40px', height: '40px', objectFit: 'cover'}} className="rounded" />
+                            )}
+                            <span>{p.name}</span>
+                          </div>
+                        </td>
+                        <td><span className="badge rounded-0 px-2 py-1" style={{backgroundColor: '#e9ecef', color: '#003366'}}>{p.category}</span></td>
+                        <td className="fw-bold text-primary">{formatCurrencyDisplay(p.price)}</td>
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                             <span className={`badge rounded-0 ${p.countInStock < 10 ? "bg-danger" : "bg-success"}`}>
+                              {p.countInStock} Units
+                             </span>
+                             {p.countInStock < 10 && <i className="bi bi-exclamation-triangle-fill text-danger small" title="Low Stock"></i>}
+                          </div>
+                        </td>
+                        <td className="text-end px-4" onClick={(e) => e.stopPropagation()}>
+                          <div className="d-flex justify-content-end gap-2">
+                            <button 
+                              onClick={() => editProduct(p)} 
+                              className="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-2"
+                              title="Edit"
+                            >
+                              <i className="bi bi-pencil-fill"></i>
+                            </button>
+                            <button 
+                              onClick={() => deleteProduct(p._id)} 
+                              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-2"
+                              title="Delete"
+                            >
+                              <i className="bi bi-trash3-fill"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-5 text-muted">
+                        <i className="bi bi-inbox fs-1 d-block mb-2"></i>
+                        No products found matching your search.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="card-footer bg-light border-0 py-2 px-4 shadow-sm">
+                <small className="text-muted fw-bold">
+                    Showing {Math.min(filteredProducts.length, 20)} of {filteredProducts.length} items (Scroll to see more)
+                </small>
+            </div>
           </div>
         </>
       )}
