@@ -8,6 +8,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
   const scrollRef = useRef(null);
 
   const scrollHorizontally = (direction) => {
@@ -42,9 +43,12 @@ const Home = () => {
     fetchData();
   }, []);
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.category.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{height: '60vh'}}>
@@ -75,6 +79,55 @@ const Home = () => {
             <div className="col-md-5">
               <div className="text-center">
                 <i className="bi bi-cart-check" style={{fontSize: '150px', opacity: '0.3'}}></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 1.6. Search Bar Section */}
+      <div className="container" style={{ marginTop: '-40px' }}>
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="card border-0 shadow-lg p-4 rounded-4" style={{ backgroundColor: 'white' }}>
+              <div className="row g-2 align-items-center">
+                <div className="col-md-9 position-relative">
+                  <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
+                  <input 
+                    type="text" 
+                    className="form-control form-control-lg ps-5 rounded-pill border-light-subtle shadow-none" 
+                    placeholder="Search for electronics, fashion, groceries..." 
+                    value={searchTerm}
+                    onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                    style={{ fontSize: '1rem', padding: '15px 50px' }}
+                  />
+                  {searchTerm && (
+                    <button 
+                      className="btn btn-link position-absolute top-50 end-0 translate-middle-y me-3 text-muted p-0"
+                      onClick={() => setSearchTerm('')}
+                    >
+                      <i className="bi bi-x-circle-fill"></i>
+                    </button>
+                  )}
+                </div>
+                <div className="col-md-3">
+                  <button className="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3" style={{ backgroundColor: '#00AEEF', borderColor: '#00AEEF' }}>
+                    SEARCH
+                  </button>
+                </div>
+              </div>
+              <div className="mt-3 d-flex flex-wrap gap-2 justify-content-center">
+                <small className="text-muted fw-bold me-2">Trending:</small>
+                {['Smartphones', 'Groceries', 'Hampers', 'Watches'].map(tag => (
+                   <span 
+                    key={tag} 
+                    className="badge bg-light text-navy fw-normal px-3 py-2 cursor-pointer border hover-shadow"
+                    style={{ cursor: 'pointer', color: '#003366' }}
+                    onClick={() => setSearchTerm(tag)}
+                   >
+                    {tag}
+                   </span>
+                ))}
               </div>
             </div>
           </div>
