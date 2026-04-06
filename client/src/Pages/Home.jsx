@@ -160,7 +160,7 @@ const Home = () => {
         {/* 4. Product Grid (4x3 Layout = 12 Items per page) */}
         <div className="row">
           {filteredProducts.length > 0 ? (
-            filteredProducts.slice((page - 1) * 12, page * 12).map(product => (
+            filteredProducts.slice((page - 1) * 20, page * 20).map(product => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product._id}>
                 <ProductCard product={product} />
               </div>
@@ -180,7 +180,7 @@ const Home = () => {
               className="btn btn-outline-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center" 
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 12 ? 'visible' : 'hidden' }}
+              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 20 ? 'visible' : 'hidden' }}
             >
               <i className="bi bi-chevron-left fs-5"></i>
             </button>
@@ -192,8 +192,8 @@ const Home = () => {
             <button 
               className="btn btn-outline-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center" 
               onClick={() => setPage(page + 1)}
-              disabled={page * 12 >= filteredProducts.length}
-              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 12 ? 'visible' : 'hidden' }}
+              disabled={page * 20 >= filteredProducts.length}
+              style={{ width: '50px', height: '50px', visibility: filteredProducts.length > 20 ? 'visible' : 'hidden' }}
             >
               <i className="bi bi-chevron-right fs-5"></i>
             </button>

@@ -7,6 +7,7 @@ const AdminOrderManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const fetchOrders = async () => {
@@ -89,9 +90,14 @@ const AdminOrderManagement = () => {
     }
   };
 
-  const filteredOrders = statusFilter === 'All' 
-    ? orders 
-    : orders.filter(order => order.status === statusFilter);
+  const filteredOrders = orders.filter(order => {
+    const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
+    const matchesSearch = 
+      order._id.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (order.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const getOrderCounts = () => {
     const counts = { All: orders.length };
@@ -161,26 +167,38 @@ const AdminOrderManagement = () => {
 
       {/* Orders Table */}
       <div className="card border-0 shadow-sm">
-        <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-          <h5 className="fw-bold mb-0">
-            <i className="bi bi-box-seam me-2"></i>
-            {statusFilter === 'All' ? 'All Orders' : `${statusFilter} Orders`}
-          </h5>
-          <span className="badge bg-primary">{filteredOrders.length} orders</span>
+        <div className="card-header bg-white py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div className="d-flex align-items-center">
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-box-seam me-2"></i>
+              {statusFilter === 'All' ? 'All Orders' : `${statusFilter} Orders`}
+            </h5>
+            <span className="badge bg-primary ms-2">{filteredOrders.length}</span>
+          </div>
+          <div className="position-relative" style={{ minWidth: '300px' }}>
+            <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <input 
+              type="text" 
+              className="form-control ps-5 rounded-pill border-primary-subtle shadow-none" 
+              placeholder="Search by Order ID or Customer..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="card-body p-0">
-          <div className="table-responsive">
+        <div className="card-body p-0 overflow-hidden">
+          <div className="table-responsive" style={{ maxHeight: '700px', overflowY: 'auto' }}>
             <table className="table table-hover mb-0">
-              <thead className="table-light">
+              <thead className="table-light sticky-top shadow-sm" style={{ zIndex: 10, top: '-1px' }}>
                 <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Items</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th>Payment</th>
-                  <th>Actions</th>
+                  <th className="py-3">Order ID</th>
+                  <th className="py-3">Customer</th>
+                  <th className="py-3">Date</th>
+                  <th className="py-3">Items</th>
+                  <th className="py-3">Total</th>
+                  <th className="py-3">Status</th>
+                  <th className="py-3">Payment</th>
+                  <th className="py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>

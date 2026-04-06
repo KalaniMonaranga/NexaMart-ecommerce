@@ -10,6 +10,7 @@ const AdminMessageManagement = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchMessages = async () => {
@@ -137,11 +138,19 @@ const AdminMessageManagement = () => {
   };
 
   const filteredMessages = messages.filter(msg => {
-    if (filter === 'all') return true;
-    if (filter === 'unread') return !msg.isRead;
-    if (filter === 'open') return msg.status === 'Open';
-    if (filter === 'resolved') return msg.status === 'Resolved';
-    return true;
+    const matchesFilter = 
+      filter === 'all' || 
+      (filter === 'unread' && !msg.isRead) ||
+      (filter === 'open' && msg.status === 'Open') ||
+      (filter === 'resolved' && msg.status === 'Resolved');
+    
+    const matchesSearch = 
+      msg.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      msg.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      msg.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      msg.message.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesFilter && matchesSearch;
   });
 
   if (loading) {
@@ -207,7 +216,20 @@ const AdminMessageManagement = () => {
         <div className="col-md-5 mb-4">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white py-3">
-              <h5 className="fw-bold mb-0">Messages ({filteredMessages.length})</h5>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h5 className="fw-bold mb-0">Messages ({filteredMessages.length})</h5>
+              </div>
+              <div className="position-relative">
+                <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted small"></i>
+                <input 
+                  type="text" 
+                  className="form-control form-control-sm ps-4 rounded-pill border-light-subtle shadow-none" 
+                  placeholder="Search messages..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{fontSize: '12px'}}
+                />
+              </div>
             </div>
             <div className="card-body p-0">
               <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
