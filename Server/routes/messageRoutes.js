@@ -38,10 +38,16 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. GET MY MESSAGES (Customer - fetch messages by their email)
+// 2. GET MY MESSAGES (Customer - fetch messages by user ID or email)
 router.get('/my-messages', protect, async (req, res) => {
   try {
-    const messages = await Message.find({ email: req.user.email }).sort({ createdAt: -1 });
+    // Search by user ID first (most reliable), then fallback to email
+    const messages = await Message.find({
+      $or: [
+        { user: req.user._id },
+        { email: req.user.email }
+      ]
+    }).sort({ createdAt: -1 });
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
